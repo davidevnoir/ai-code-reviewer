@@ -1,0 +1,49 @@
+<div class="download-section-container">
+  @if (!hasResults()) {
+  <div class="empty-state">
+    <mat-icon class="empty-icon">download</mat-icon>
+    <p>Download options will appear here after analysis is complete</p>
+  </div>
+  } @else {
+  <div class="download-content">
+    <div class="download-header">
+      <h2>Download Results</h2>
+      <button
+        mat-raised-button
+        color="accent"
+        class="download-all-button"
+        (click)="downloadAll()"
+        [disabled]="!canDownload()"
+      >
+        <mat-icon>folder_zip</mat-icon>
+        Download All
+      </button>
+    </div>
+
+    <div class="download-grid">
+      @for (option of downloadOptions(); track option.name) {
+      <div class="download-card">
+        <div class="card-icon">
+          <mat-icon [color]="canDownload() ? 'primary' : 'disabled'">{{ option.icon }}</mat-icon>
+        </div>
+        <div class="card-content">
+          <h3>{{ option.name }}</h3>
+          <p>{{ option.description }}</p>
+          <mat-chip>{{ option.format.toUpperCase() }}</mat-chip>
+        </div>
+        <button
+          mat-raised-button
+          color="primary"
+          class="download-button"
+          (click)="downloadFile(option)"
+          [disabled]="!canDownload()"
+        >
+          <mat-icon>download</mat-icon>
+          Download
+        </button>
+      </div>
+      }
+    </div>
+  </div>
+  }
+</div>

@@ -1,0 +1,228 @@
+<div class="settings-dialog">
+  <h2 mat-dialog-title>
+    <mat-icon>settings</mat-icon>
+    Configuration Settings
+  </h2>
+
+  <mat-dialog-content>
+    <mat-tab-group>
+      <!-- Azure OpenAI Tab -->
+      <mat-tab label="Azure OpenAI">
+        <div class="tab-content">
+          <p class="tab-description">
+            Configure your Azure OpenAI credentials to enable AI-powered analysis.
+          </p>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>API Key</mat-label>
+            <input
+              matInput
+              [type]="showApiKey() ? 'text' : 'password'"
+              [value]="azureConfig().apiKey"
+              (input)="updateAzureField('apiKey', $any($event.target).value)"
+              placeholder="Enter your Azure OpenAI API key"
+            />
+            <button mat-icon-button matSuffix (click)="toggleApiKeyVisibility()" type="button">
+              <mat-icon>{{ showApiKey() ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+            <mat-hint>Your API key from Azure Portal</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Endpoint URL</mat-label>
+            <input
+              matInput
+              [value]="azureConfig().endpoint"
+              (input)="updateAzureField('endpoint', $any($event.target).value)"
+              placeholder="https://your-resource.openai.azure.com/"
+              type="url"
+            />
+            <mat-icon matPrefix>link</mat-icon>
+            <mat-hint>Your Azure OpenAI endpoint URL</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Deployment Name</mat-label>
+            <input
+              matInput
+              [value]="azureConfig().deployment"
+              (input)="updateAzureField('deployment', $any($event.target).value)"
+              placeholder="your-deployment-name"
+            />
+            <mat-icon matPrefix>cloud</mat-icon>
+            <mat-hint>Must match deployment name in Azure Portal</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>API Version</mat-label>
+            <mat-select
+              [value]="azureConfig().apiVersion"
+              (selectionChange)="updateAzureField('apiVersion', $event.value)"
+            >
+              @for (version of availableApiVersions; track version.value) {
+              <mat-option [value]="version.value">{{ version.label }}</mat-option>
+              }
+            </mat-select>
+            <mat-icon matPrefix>code</mat-icon>
+            <mat-hint>Use latest stable (2024-10-21) for best results</mat-hint>
+          </mat-form-field>
+
+          <div class="help-section">
+            <mat-icon color="primary">info</mat-icon>
+            <div>
+              <strong>📍 Step-by-step in Azure Portal:</strong>
+              <ol>
+                <li>
+                  <strong>Go to Azure Portal:</strong>
+                  <a href="https://portal.azure.com" target="_blank">https://portal.azure.com</a>
+                </li>
+                <li>
+                  <strong>Find your OpenAI resource:</strong>
+                  <ul>
+                    <li>Search "Azure OpenAI" in top search bar</li>
+                    <li>Click on your resource name</li>
+                  </ul>
+                </li>
+                <li>
+                  <strong>Get API Key & Endpoint:</strong>
+                  <ul>
+                    <li>Left menu → <strong>"Keys and Endpoint"</strong></li>
+                    <li>Copy <strong>KEY 1</strong> or <strong>KEY 2</strong></li>
+                    <li>
+                      Copy <strong>Endpoint</strong> (looks like:
+                      https://your-name.openai.azure.com/)
+                    </li>
+                  </ul>
+                </li>
+                <li>
+                  <strong>🚨 CREATE A DEPLOYMENT (if you haven't):</strong>
+                  <ul>
+                    <li>Left menu → <strong>"Model deployments"</strong></li>
+                    <li>
+                      Click <strong>"Create new deployment"</strong> or
+                      <strong>"+ Create"</strong> button
+                    </li>
+                    <li>
+                      Select model: <strong>gpt-4o</strong> or <strong>gpt-4</strong> (recommended)
+                    </li>
+                    <li>Give it a deployment name (e.g., "my-gpt4o")</li>
+                    <li>Click <strong>"Create"</strong></li>
+                    <li>Wait ~30 seconds for deployment to complete</li>
+                  </ul>
+                </li>
+                <li>
+                  <strong>Get Deployment Name:</strong>
+                  <ul>
+                    <li>Left menu → <strong>"Model deployments"</strong></li>
+                    <li>You'll see your deployments listed in a table</li>
+                    <li>Copy your <strong>Deployment name</strong> (NOT the model name!)</li>
+                    <li>
+                      OR click <strong>"Manage Deployments"</strong> to open Azure OpenAI Studio
+                    </li>
+                    <li>⚠️ <strong>Case-sensitive!</strong> (e.g., "gpt-4o" ≠ "GPT-4o")</li>
+                  </ul>
+                </li>
+              </ol>
+              <br />
+              <strong>🔴 If you see "DeploymentNotFound" error:</strong>
+              <ul>
+                <li>
+                  ✅ <strong>You need to CREATE a deployment first!</strong> (see step 4 above)
+                </li>
+                <li>
+                  ✅ Make sure you're using the <strong>deployment name</strong>, NOT the model name
+                </li>
+                <li>✅ Check for typos or extra spaces</li>
+                <li>✅ Deployment names are case-sensitive</li>
+                <li>✅ Wait 30-60 seconds after creating a new deployment</li>
+              </ul>
+              <br />
+              <strong>💡 Example:</strong>
+              <ul>
+                <li>Model name: <code>gpt-4o</code> ← Don't use this!</li>
+                <li>Deployment name: <code>my-gpt4o-deployment</code> ← Use this!</li>
+              </ul>
+              <br />
+              <strong>⚠️ Common Mistakes:</strong>
+              <ul>
+                <li>❌ <strong>No deployment created yet</strong> → Create one first!</li>
+                <li>❌ Using model name instead of deployment name</li>
+                <li>❌ Typos in endpoint URL</li>
+                <li>❌ Using old/expired API key</li>
+              </ul>
+              <br />
+              <strong>💡 API Version:</strong>
+              <ul>
+                <li><code>2024-10-21</code> - ✅ Latest stable (recommended)</li>
+                <li>Preview versions have newer features but may change</li>
+                <li>You don't need to check this in Azure - just use the dropdown</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <!-- GitHub Tab -->
+      <mat-tab label="GitHub">
+        <div class="tab-content">
+          <p class="tab-description">Configure GitHub access to analyze pull requests.</p>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Personal Access Token</mat-label>
+            <input
+              matInput
+              [type]="showGitHubToken() ? 'text' : 'password'"
+              [value]="githubConfig().token"
+              (input)="updateGitHubField('token', $any($event.target).value)"
+              placeholder="ghp_..."
+            />
+            <button mat-icon-button matSuffix (click)="toggleGitHubTokenVisibility()" type="button">
+              <mat-icon>{{ showGitHubToken() ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+            <mat-hint>Required for accessing GitHub API</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Model Repository URL (Optional)</mat-label>
+            <input
+              matInput
+              [value]="githubConfig().modelRepoUrl"
+              (input)="updateGitHubField('modelRepoUrl', $any($event.target).value)"
+              placeholder="https://github.com/your-org/model-repo"
+              type="url"
+            />
+            <mat-icon matPrefix>folder</mat-icon>
+            <mat-hint>Repository with coding standards and guidelines</mat-hint>
+          </mat-form-field>
+
+          <div class="help-section">
+            <mat-icon color="primary">info</mat-icon>
+            <div>
+              <strong>How to create a token:</strong>
+              <ol>
+                <li>Go to GitHub → Settings → Developer Settings</li>
+                <li>Click "Personal Access Tokens" → "Tokens (classic)"</li>
+                <li>Generate new token</li>
+                <li>Grant <code>repo</code> permission</li>
+                <li>Copy and paste the token here</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="clearConfig()" color="warn">
+      <mat-icon>delete</mat-icon>
+      Clear All
+    </button>
+    <div class="spacer"></div>
+    <button mat-button (click)="cancel()">Cancel</button>
+    <button mat-raised-button color="primary" (click)="save()">
+      <mat-icon>save</mat-icon>
+      Save
+    </button>
+  </mat-dialog-actions>
+</div>

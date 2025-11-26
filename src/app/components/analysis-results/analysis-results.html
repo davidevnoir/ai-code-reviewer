@@ -1,0 +1,187 @@
+<div class="analysis-results-container">
+  @if (!hasResults()) {
+  <div class="empty-state">
+    <mat-icon class="empty-icon">analytics</mat-icon>
+    <h3>No Analysis Results Yet</h3>
+    <p>Enter a GitHub PR URL above and click "Analyze PR" to see AI-generated insights</p>
+  </div>
+  } @else {
+  <div class="results-content">
+    <div class="results-header">
+      <h2>Analysis Results</h2>
+      <div class="stats">
+        <mat-chip highlighted>{{ suggestionCount() }} Suggestions</mat-chip>
+        @if (securityCount() > 0) {
+        <mat-chip highlighted [color]="securityCount() > 0 ? 'warn' : 'primary'">
+          {{ securityCount() }} Security Issues
+        </mat-chip>
+        }
+        <mat-chip highlighted>{{ testScenarioCount() }} Test Scenarios</mat-chip>
+      </div>
+    </div>
+
+    <mat-accordion multi>
+      <!-- Code Suggestions -->
+      @if (analysisResult()?.suggestions && analysisResult()!.suggestions.length) {
+      <mat-expansion-panel [expanded]="true">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <mat-icon class="section-icon">lightbulb</mat-icon>
+            Code Suggestions
+            <mat-chip class="count-chip">{{ analysisResult()!.suggestions.length }}</mat-chip>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <div class="section-content">
+          @for (suggestion of analysisResult()!.suggestions; track suggestion.id) {
+          <div class="suggestion-card">
+            <div class="suggestion-header">
+              <mat-chip [color]="getSeverityColor(suggestion.severity)">
+                {{ suggestion.severity }}
+              </mat-chip>
+              <mat-chip>{{ suggestion.category }}</mat-chip>
+              <span class="file-location">
+                {{ getShortFilePath(suggestion.file) }}:{{ suggestion.line }}
+              </span>
+              <button mat-icon-button (click)="copySuggestion(suggestion)" matTooltip="Copy">
+                <mat-icon>content_copy</mat-icon>
+              </button>
+            </div>
+            <p class="suggestion-message">{{ suggestion.message }}</p>
+            @if (suggestion.suggestedCode) {
+            <pre class="code-suggestion"><code>{{ suggestion.suggestedCode }}</code></pre>
+            }
+          </div>
+          }
+        </div>
+      </mat-expansion-panel>
+      }
+
+      <!-- Security Issues -->
+      @if (analysisResult()?.security && analysisResult()!.security.length) {
+      <mat-expansion-panel [expanded]="securityCount() > 0">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <mat-icon class="section-icon" color="warn">security</mat-icon>
+            Security Issues
+            <mat-chip class="count-chip" color="warn">{{
+              analysisResult()!.security.length
+            }}</mat-chip>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <div class="section-content">
+          @for (issue of analysisResult()!.security; track issue.id) {
+          <div class="security-card">
+            <div class="security-header">
+              <mat-chip [color]="getSeverityColor(issue.severity)">
+                {{ issue.severity }}
+              </mat-chip>
+              <span class="file-location">{{ getShortFilePath(issue.file) }}</span>
+            </div>
+            <p class="security-issue"><strong>Issue:</strong> {{ issue.issue }}</p>
+            <p class="security-recommendation"><strong>Fix:</strong> {{ issue.recommendation }}</p>
+          </div>
+          }
+        </div>
+      </mat-expansion-panel>
+      }
+
+      <!-- Performance Issues -->
+      @if (analysisResult()?.performance && analysisResult()!.performance.length) {
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <mat-icon class="section-icon">speed</mat-icon>
+            Performance
+            <mat-chip class="count-chip">{{ analysisResult()!.performance.length }}</mat-chip>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <div class="section-content">
+          @for (perf of analysisResult()!.performance; track perf.id) {
+          <div class="performance-card">
+            <div class="performance-header">
+              <mat-chip [color]="getSeverityColor(perf.impact)">{{ perf.impact }} impact</mat-chip>
+              <span class="file-location">{{ getShortFilePath(perf.file) }}</span>
+            </div>
+            <p><strong>Issue:</strong> {{ perf.issue }}</p>
+            <p><strong>Recommendation:</strong> {{ perf.recommendation }}</p>
+          </div>
+          }
+        </div>
+      </mat-expansion-panel>
+      }
+
+      <!-- Test Scenarios -->
+      @if (analysisResult()?.testScenarios && analysisResult()!.testScenarios.length) {
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <mat-icon class="section-icon">fact_check</mat-icon>
+            Test Scenarios
+            <mat-chip class="count-chip">{{ analysisResult()!.testScenarios.length }}</mat-chip>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <div class="section-content">
+          @for (scenario of analysisResult()!.testScenarios; track scenario.id) {
+          <div class="scenario-card">
+            <div class="scenario-header">
+              <h4>{{ scenario.title }}</h4>
+              <mat-chip [color]="getSeverityColor(scenario.priority)">{{
+                scenario.priority
+              }}</mat-chip>
+              <mat-chip>{{ scenario.category }}</mat-chip>
+              <button mat-icon-button (click)="copyScenario(scenario)" matTooltip="Copy">
+                <mat-icon>content_copy</mat-icon>
+              </button>
+            </div>
+            <p class="scenario-description">{{ scenario.description }}</p>
+            <div class="scenario-steps">
+              <strong>Steps:</strong>
+              <ol>
+                @for (step of scenario.steps; track $index) {
+                <li>{{ step }}</li>
+                }
+              </ol>
+            </div>
+            <p><strong>Expected:</strong> {{ scenario.expectedResult }}</p>
+          </div>
+          }
+        </div>
+      </mat-expansion-panel>
+      }
+
+      <!-- Recommendations -->
+      @if (analysisResult()?.recommendations && analysisResult()!.recommendations.length) {
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <mat-icon class="section-icon">thumb_up</mat-icon>
+            Recommendations
+            <mat-chip class="count-chip">{{ analysisResult()!.recommendations.length }}</mat-chip>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <div class="section-content">
+          @for (rec of analysisResult()!.recommendations; track rec.id) {
+          <div class="recommendation-card">
+            <div class="rec-header">
+              <h4>{{ rec.title }}</h4>
+              <mat-chip [color]="getSeverityColor(rec.priority)">{{ rec.priority }}</mat-chip>
+              <mat-chip
+                ><mat-icon>{{ getCategoryIcon(rec.category) }}</mat-icon
+                >{{ rec.category }}</mat-chip
+              >
+            </div>
+            <p>{{ rec.description }}</p>
+          </div>
+          }
+        </div>
+      </mat-expansion-panel>
+      }
+    </mat-accordion>
+  </div>
+  }
+</div>

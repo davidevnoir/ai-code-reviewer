@@ -1,0 +1,146 @@
+.download-section-container {
+  min-height: 200px;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  text-align: center;
+  color: rgba(0, 0, 0, 0.6);
+
+  .empty-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    color: rgba(0, 0, 0, 0.3);
+    margin-bottom: 16px;
+  }
+
+  p {
+    margin: 0;
+    font-size: 14px;
+  }
+}
+
+.download-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.download-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+
+  .format-select {
+    width: 200px;
+  }
+
+  .download-all-button {
+    height: 48px;
+
+    mat-icon {
+      margin-right: 8px;
+    }
+  }
+}
+
+.download-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.download-card {
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 8px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: box-shadow 0.2s, transform 0.2s;
+
+  &:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+  }
+
+  .card-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: #e3f2fd;
+
+    mat-icon {
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+      color: #1976d2;
+    }
+  }
+
+  .card-content {
+    flex: 1;
+
+    h3 {
+      margin: 0 0 8px;
+      font-size: 18px;
+      font-weight: 500;
+      color: rgba(0, 0, 0, 0.87);
+    }
+
+    p {
+      margin: 0 0 12px;
+      font-size: 14px;
+      color: rgba(0, 0, 0, 0.6);
+      line-height: 1.5;
+    }
+  }
+
+  .format-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+
+    mat-chip {
+      font-size: 11px;
+      min-height: 24px;
+      padding: 4px 8px;
+    }
+  }
+
+  .download-button {
+    width: 100%;
+
+    mat-icon {
+      margin-right: 8px;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .download-header {
+    flex-direction: column;
+    align-items: stretch;
+
+    .format-select {
+      width: 100%;
+    }
+
+    .download-all-button {
+      width: 100%;
+    }
+  }
+
+  .download-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,68 @@
+<div class="pr-input-container">
+  <div class="header-row">
+    <h2>Analyze Pull Request</h2>
+    <button
+      mat-icon-button
+      class="settings-button"
+      (click)="showSettings()"
+      matTooltip="Configure API Keys"
+    >
+      <mat-icon>settings</mat-icon>
+    </button>
+  </div>
+
+  @if (!isConfigured()) {
+  <div class="warning-message">
+    <mat-icon color="warn">warning</mat-icon>
+    <span>Please configure your API keys before analyzing. Click the settings icon.</span>
+  </div>
+  }
+
+  <div class="input-row">
+    <mat-form-field appearance="outline" class="pr-url-field">
+      <mat-label>GitHub Pull Request URL</mat-label>
+      <input
+        matInput
+        [value]="prUrl()"
+        (input)="onUrlChange($any($event.target).value)"
+        placeholder="https://github.com/owner/repo/pull/123"
+        type="url"
+        [disabled]="isAnalyzing"
+      />
+      <mat-icon matPrefix>link</mat-icon>
+      @if (error()) {
+      <mat-error>{{ error() }}</mat-error>
+      }
+      <mat-hint>Enter a valid GitHub PR URL to analyze</mat-hint>
+    </mat-form-field>
+
+    <button
+      mat-raised-button
+      color="primary"
+      class="analyze-button"
+      (click)="analyzePR()"
+      [disabled]="isAnalyzing || !prUrl()"
+    >
+      <mat-icon>analytics</mat-icon>
+      @if (isAnalyzing) {
+      <span>Analyzing...</span>
+      } @else {
+      <span>Analyze PR</span>
+      }
+    </button>
+  </div>
+
+  @if (isAnalyzing) {
+  <div class="progress-section">
+    <mat-progress-bar mode="determinate" [value]="progress" class="progress-bar"></mat-progress-bar>
+    <div class="progress-info">
+      <span class="progress-text">{{ progress }}% - {{ statusMessage }}</span>
+    </div>
+  </div>
+  } @if (error()) {
+  <div class="error-message">
+    <mat-icon color="warn">error</mat-icon>
+    <span>{{ error() }}</span>
+  </div>
+  }
+</div>
