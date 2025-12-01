@@ -46,3 +46,9 @@ Thumbs.db
 .env
 .env.local
 .env.*.local
+
+# API Keys and Secrets (NEVER commit these!)
+**/api-keys.md
+**/*secret*
+**/*key*.json
+!.env.example

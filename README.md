@@ -1,11 +1,19 @@
 # PR Analysis UI
 
+[![Deploy to GitHub Pages](https://github.com/davidevnoir/ai-code-reviewer/actions/workflows/deploy.yml/badge.svg)](https://github.com/davidevnoir/ai-code-reviewer/actions/workflows/deploy.yml)
+
 > AI-powered GitHub Pull Request analysis tool with Azure OpenAI integration
 
-**Status:** 🚧 Services Complete - UI Integration Next  
+**Status:** ✅ Production Ready  
 **Version:** 1.0.0  
 **Framework:** Angular 21  
-**Last Updated:** November 26, 2025
+**Last Updated:** December 1, 2025
+
+---
+
+## 🚀 Live Demo
+
+**Visit:** [https://davidevnoir.github.io/ai-code-reviewer](https://davidevnoir.github.io/ai-code-reviewer)
 
 ---
 
@@ -233,6 +241,54 @@ GITHUB_TOKEN=ghp_your_token_here
 
 ---
 
+## 🌐 Deployment
+
+### Deploy to GitHub Pages
+
+This app automatically deploys to GitHub Pages on every push to the `master` branch.
+
+#### One-Time Setup
+
+```bash
+# 1. Make sure your repository is named 'ai-code-reviewer'
+#    or update baseHref in angular.json
+
+# 2. Commit all changes
+git add .
+git commit -m "Ready for deployment"
+
+# 3. Push to GitHub
+git push origin master
+```
+
+#### Enable GitHub Pages
+
+1. Go to your repository on GitHub
+2. Navigate to **Settings** → **Pages**
+3. Under "Build and deployment":
+   - Source: Select **GitHub Actions**
+4. The app will auto-deploy on every push to `master`
+
+#### Manual Deployment
+
+```bash
+# Build and deploy manually
+npm run deploy
+
+# This will:
+# 1. Build the production bundle
+# 2. Deploy to gh-pages branch
+```
+
+#### View Your Site
+
+After deployment completes (2-3 minutes):
+
+- Visit: `https://davidevnoir.github.io/ai-code-reviewer`
+- Check deployment status in Actions tab
+
+---
+
 ## 💻 Development
 
 ### Start Dev Server
@@ -267,8 +323,8 @@ ng lint
 
 ```typescript
 // In your component
-import { inject } from '@angular/core';
-import { AnalysisService, AzureOpenAIService } from './services';
+import { inject } from "@angular/core";
+import { AnalysisService, AzureOpenAIService } from "./services";
 
 export class YourComponent {
   private analysisService = inject(AnalysisService);
@@ -277,18 +333,18 @@ export class YourComponent {
   ngOnInit() {
     // Configure services
     this.aiService.setConfig({
-      apiKey: 'your-api-key',
-      endpoint: 'your-endpoint',
-      deployment: 'your-deployment',
+      apiKey: "your-api-key",
+      endpoint: "your-endpoint",
+      deployment: "your-deployment",
     });
 
-    this.analysisService.setGitHubToken('your-github-token');
+    this.analysisService.setGitHubToken("your-github-token");
   }
 
   analyzePR(prUrl: string) {
     this.analysisService.analyzePullRequest(prUrl).subscribe({
-      next: (result) => console.log('Analysis:', result),
-      error: (err) => console.error('Error:', err),
+      next: (result) => console.log("Analysis:", result),
+      error: (err) => console.error("Error:", err),
     });
   }
 }
