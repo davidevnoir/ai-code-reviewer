@@ -133,12 +133,32 @@ export class ConfigService {
     if (!config.token) {
       return 'GitHub token is required';
     }
-    if (!config.token.startsWith('ghp_') && !config.token.startsWith('github_pat_')) {
+    if (
+      !config.token.startsWith('ghp_') &&
+      !config.token.startsWith('github_pat_')
+    ) {
       return 'Token should start with "ghp_" or "github_pat_"';
     }
-    if (config.modelRepoUrl && !config.modelRepoUrl.startsWith('https://github.com/')) {
-      return 'Model repo URL must be a valid GitHub URL';
+
+    // Model repo URL is optional - if empty, skip validation
+    if (config.modelRepoUrl) {
+      const trimmedUrl = config.modelRepoUrl.trim();
+
+      // If not empty, validate format
+      if (trimmedUrl) {
+        console.log('Validating URL:', trimmedUrl);
+
+        // More permissive regex - allows uppercase, numbers, hyphens, underscores, dots
+        const githubUrlPattern =
+          /^https:\/\/github\.com\/[a-zA-Z0-9-_]+\/[a-zA-Z0-9-_\.]+\/?$/;
+
+        if (!githubUrlPattern.test(trimmedUrl)) {
+          console.log('URL validation failed for:', trimmedUrl);
+          return 'Invalid model repository URL';
+        }
+      }
     }
+
     return null;
   }
 

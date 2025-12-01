@@ -53,7 +53,10 @@ export class GitHubService {
   /**
    * Fetch pull request metadata and files
    */
-  fetchPullRequest(prUrl: string, token: string): Observable<GitHubPullRequest> {
+  fetchPullRequest(
+    prUrl: string,
+    token: string
+  ): Observable<GitHubPullRequest> {
     const parsed = this.parsePRUrl(prUrl);
     if (!parsed) {
       return throwError(() => new Error('Invalid GitHub PR URL'));
@@ -63,9 +66,12 @@ export class GitHubService {
     const { owner, repo, prNumber } = parsed;
 
     return this.http
-      .get<any>(`${this.GITHUB_API_BASE}/repos/${owner}/${repo}/pulls/${prNumber}`, {
-        headers,
-      })
+      .get<any>(
+        `${this.GITHUB_API_BASE}/repos/${owner}/${repo}/pulls/${prNumber}`,
+        {
+          headers,
+        }
+      )
       .pipe(
         map((response) => this.mapPRResponse(response, owner, repo)),
         catchError(this.handleError)
@@ -84,9 +90,12 @@ export class GitHubService {
     const headers = this.createHeaders(token);
 
     return this.http
-      .get<any[]>(`${this.GITHUB_API_BASE}/repos/${owner}/${repo}/pulls/${prNumber}/files`, {
-        headers,
-      })
+      .get<any[]>(
+        `${this.GITHUB_API_BASE}/repos/${owner}/${repo}/pulls/${prNumber}/files`,
+        {
+          headers,
+        }
+      )
       .pipe(
         map((files) => files.map(this.mapFileResponse)),
         catchError(this.handleError)
@@ -105,9 +114,12 @@ export class GitHubService {
     const headers = this.createHeaders(token);
 
     return this.http
-      .get<any[]>(`${this.GITHUB_API_BASE}/repos/${owner}/${repo}/pulls/${prNumber}/commits`, {
-        headers,
-      })
+      .get<any[]>(
+        `${this.GITHUB_API_BASE}/repos/${owner}/${repo}/pulls/${prNumber}/commits`,
+        {
+          headers,
+        }
+      )
       .pipe(
         map((commits) => commits.map(this.mapCommitResponse)),
         catchError(this.handleError)
@@ -118,20 +130,31 @@ export class GitHubService {
    * Load model repository context files
    * Fetches coding standards, architecture patterns, and testing guidelines
    */
-  loadModelRepoContext(modelRepoUrl: string, token: string): Observable<ModelRepositoryContext> {
-    const parsed = this.parsePRUrl(modelRepoUrl.replace('/pull/', '/repo/'));
-    if (!parsed) {
+  loadModelRepoContext(
+    modelRepoUrl: string,
+    token: string
+  ): Observable<ModelRepositoryContext> {
+    // Parse repository URL (not PR URL)
+    const repoRegex = /github\.com\/([^\/]+)\/([^\/]+)\/?$/;
+    const match = modelRepoUrl.match(repoRegex);
+
+    if (!match) {
+      console.log('Failed to parse model repo URL:', modelRepoUrl);
       return throwError(() => new Error('Invalid model repository URL'));
     }
 
+    const owner = match[1];
+    const repo = match[2];
     const headers = this.createHeaders(token);
-    const { owner, repo } = parsed;
 
     // Fetch context files in parallel
     return this.http
-      .get<ModelRepositoryContext>(`${this.GITHUB_API_BASE}/repos/${owner}/${repo}/contents`, {
-        headers,
-      })
+      .get<ModelRepositoryContext>(
+        `${this.GITHUB_API_BASE}/repos/${owner}/${repo}/contents`,
+        {
+          headers,
+        }
+      )
       .pipe(
         map(() => {
           // Placeholder - actual implementation would fetch specific files
@@ -148,13 +171,21 @@ export class GitHubService {
   /**
    * Fetch file content from repository
    */
-  fetchFileContent(owner: string, repo: string, path: string, token: string): Observable<string> {
+  fetchFileContent(
+    owner: string,
+    repo: string,
+    path: string,
+    token: string
+  ): Observable<string> {
     const headers = this.createHeaders(token);
 
     return this.http
-      .get<any>(`${this.GITHUB_API_BASE}/repos/${owner}/${repo}/contents/${path}`, {
-        headers,
-      })
+      .get<any>(
+        `${this.GITHUB_API_BASE}/repos/${owner}/${repo}/contents/${path}`,
+        {
+          headers,
+        }
+      )
       .pipe(
         map((response) => {
           // Decode base64 content
@@ -167,7 +198,12 @@ export class GitHubService {
   /**
    * Get combined diff for PR
    */
-  getPRDiff(owner: string, repo: string, prNumber: number, token: string): Observable<string> {
+  getPRDiff(
+    owner: string,
+    repo: string,
+    prNumber: number,
+    token: string
+  ): Observable<string> {
     const headers = this.createHeaders(token);
     headers.set('Accept', 'application/vnd.github.v3.diff');
 
@@ -193,7 +229,11 @@ export class GitHubService {
   /**
    * Map GitHub API PR response to internal model
    */
-  private mapPRResponse(response: any, owner: string, repo: string): GitHubPullRequest {
+  private mapPRResponse(
+    response: any,
+    owner: string,
+    repo: string
+  ): GitHubPullRequest {
     return {
       id: response.id,
       number: response.number,

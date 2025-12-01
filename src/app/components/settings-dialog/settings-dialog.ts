@@ -154,20 +154,26 @@ export class SettingsDialogComponent {
   /**
    * Update Azure config field
    */
-  updateAzureField(field: keyof ReturnType<typeof this.azureConfig>, value: string): void {
+  updateAzureField(
+    field: keyof ReturnType<typeof this.azureConfig>,
+    value: string
+  ): void {
     this.azureConfig.update((config) => ({
       ...config,
-      [field]: value,
+      [field]: value.trim(),
     }));
   }
 
   /**
    * Update GitHub config field
    */
-  updateGitHubField(field: keyof ReturnType<typeof this.githubConfig>, value: string): void {
+  updateGitHubField(
+    field: keyof ReturnType<typeof this.githubConfig>,
+    value: string
+  ): void {
     this.githubConfig.update((config) => ({
       ...config,
-      [field]: value,
+      [field]: value.trim(),
     }));
   }
 }
